@@ -24,7 +24,9 @@ struct BottomNavUI: View {
                 .tabItem{
                     Label("",systemImage:"gearshape.fill")
                 }
+                .background(Color("filterBackground"))
         }
+        .background(Color("filterBackground"))
     }
 }
 

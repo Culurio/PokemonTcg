@@ -27,7 +27,6 @@ struct SearchView: View {
                 MenuFilterView(filterType:"Rarity")
 
             }
-            Spacer()
         }
         .padding()
     }
