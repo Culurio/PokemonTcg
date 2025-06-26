@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ListUIView: View {
     @State private var query = ""
-
     var body: some View {
         SearchView(query: $query)
     }
