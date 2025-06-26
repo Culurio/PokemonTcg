@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ListUIView: View {
+<<<<<<< HEAD
     @State private var query = ""
 
     var body: some View {
@@ -21,3 +22,13 @@ struct ListUIView: View {
 }
 
 
+=======
+    var body: some View {
+        Text("PokemonList")
+    }
+}
+
+#Preview {
+    ListUIView()
+}
+>>>>>>> main

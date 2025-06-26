@@ -14,7 +14,11 @@ struct BottomNavUI: View {
                 .tabItem{
                     Label("",systemImage:"house.fill")
                 }
+<<<<<<< HEAD
             ListUIView()
+=======
+            FavouriteUIView()
+>>>>>>> main
                 .tabItem{
                     Label("",systemImage:"heart.fill")
                 }
