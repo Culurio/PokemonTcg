@@ -9,16 +9,29 @@ import SwiftUI
 
 struct MenuFilterView: View {
     var filterType: String
+
     var body: some View {
         Menu {
-            // Type options
+            if filterType == "Type" {
+                ForEach(ElementType.allCases, id: \.self) { type in
+                    Button(type.rawValue) {
+                        //TODO
+                    }
+                }
+            } else {
+                ForEach(Rarity.allCases, id: \.self) { type in
+                    Button(type.rawValue) {
+                        //TODO
+                    }
+                }
+            }
         } label: {
             HStack {
                 Text(filterType)
-                    .foregroundColor(Color.black)
+                    .foregroundColor(.black)
                 Spacer()
                 Image(systemName: "line.3.horizontal.decrease")
-                    .foregroundColor(Color.black)
+                    .foregroundColor(.black)
             }
             .padding()
             .background(Color("filterBackground"))
@@ -26,6 +39,7 @@ struct MenuFilterView: View {
         }
     }
 }
+
 
 #Preview {
     MenuFilterView(filterType: "Filter")
