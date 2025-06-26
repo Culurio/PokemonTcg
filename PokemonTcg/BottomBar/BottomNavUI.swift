@@ -14,14 +14,11 @@ struct BottomNavUI: View {
                 .tabItem{
                     Label("",systemImage:"house.fill")
                 }
-            ListUIView()
                 .tabItem{
-                    Label("",systemImage:"heart.fill")
-                }
-            
-            SettingsUIView()
-                .tabItem{
-                    Label("",systemImage:"gearshape.fill")
+                    SettingsUIView()
+                        .tabItem{
+                            Label("",systemImage:"gearshape.fill")
+                        }
                 }
         }
     }
