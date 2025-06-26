@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct BottomNavUI: View {
     var body: some View {
         TabView{
@@ -14,11 +15,14 @@ struct BottomNavUI: View {
                 .tabItem{
                     Label("",systemImage:"house.fill")
                 }
+            ListUIView()
                 .tabItem{
-                    SettingsUIView()
-                        .tabItem{
-                            Label("",systemImage:"gearshape.fill")
-                        }
+                    Label("",systemImage:"heart.fill")
+                }
+            
+            SettingsUIView()
+                .tabItem{
+                    Label("",systemImage:"gearshape.fill")
                 }
         }
     }
