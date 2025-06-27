@@ -10,11 +10,16 @@ import SwiftUI
 struct ListUIView: View {
     @State private var query = ""
     @State private var selectedPokemon: PokemonCard? = nil
+    let layout: ListLayoutStyle
 
-    let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
+    var columns: [GridItem] {
+        switch layout {
+        case .home:
+            return [GridItem(.flexible()), GridItem(.flexible())]
+        case .favorites:
+            return [GridItem(.flexible())]
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -23,7 +28,7 @@ struct ListUIView: View {
                     SearchView(query: $query)
 
                     ScrollView {
-                        LazyVGrid(columns: columns, spacing: 45) {
+                        LazyVGrid(columns: columns, spacing: layout == .home ? 45 : 24) {
                             ForEach(0..<20, id: \.self) { number in
                                 let pokemon = PokemonCard(
                                     name: "Charizard \(number)",
@@ -31,15 +36,20 @@ struct ListUIView: View {
                                     rarity: .rare
                                 )
 
-                                CardUIView(pokemon: pokemon) {
-                                    selectedPokemon = pokemon
+                                if layout == .home {
+                                    CardUIView(pokemon: pokemon) {
+                                        selectedPokemon = pokemon
+                                    }
+                                } else {
+                                    CardFavouriteUIView(pokemon: pokemon) {
+                                        selectedPokemon = pokemon
+                                    }
                                 }
                             }
                         }
                         .padding()
                     }
                 }
-                .navigationTitle("Pokémon")
             }
 
             if let selected = selectedPokemon {
@@ -52,7 +62,13 @@ struct ListUIView: View {
 }
 
 
+enum ListLayoutStyle {
+    case home
+    case favorites
+}
+
+
 
 #Preview {
-    ListUIView()
+    ListUIView(layout: ListLayoutStyle.favorites)
 }
