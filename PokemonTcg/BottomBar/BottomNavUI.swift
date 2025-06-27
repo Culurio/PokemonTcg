@@ -11,11 +11,11 @@ import SwiftUI
 struct BottomNavUI: View {
     var body: some View {
         TabView{
-            ListUIView()
+            ListUIView(layout: ListLayoutStyle.home)
                 .tabItem{
                     Label("",systemImage:"house.fill")
                 }
-            ListUIView()
+            ListUIView(layout: ListLayoutStyle.favorites)
                 .tabItem{
                     Label("",systemImage:"heart.fill")
                 }
