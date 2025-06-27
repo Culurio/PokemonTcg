@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct CardUIView: View {
-    let pokemonName: String
+    let pokemon: PokemonCard?
+    var onTap: () -> Void
+
+
     let cardSize: CGSize = CGSize(width: 125, height: 160)
     let labelHeight: CGFloat = 40
     let cornerRadius: CGFloat = 8
@@ -33,7 +36,7 @@ struct CardUIView: View {
             }
             .frame(width: cardSize.width, height: cardSize.height)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-            Text(pokemonName)
+            Text(pokemon?.name ?? "No name")
                 .frame(width: cardSize.width, height: labelHeight)
                 .background(Color("cardTextBackground"))
                 .foregroundColor(.white)
@@ -41,10 +44,17 @@ struct CardUIView: View {
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 .offset(y: labelHeight * 0.75)
         }
+        .onTapGesture {
+            onTap()
+        }
     }
 }
 
 
 #Preview {
-    CardUIView(pokemonName: "Charizard")
+    let mockPokemon = PokemonCard(name: "Charizard", type: [.fire], rarity: .rare)
+
+    CardUIView(pokemon:mockPokemon){
+
+    }
 }
