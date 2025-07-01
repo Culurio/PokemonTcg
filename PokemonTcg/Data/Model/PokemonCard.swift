@@ -5,13 +5,15 @@
 //  Created by Cláudio Costa on 26/06/2025.
 //
 
-struct PokemonCard {
+struct PokemonCard: Codable, Identifiable{
+    let id: String
     let name: String
-    let type: Array<ElementType>
-    let rarity: Rarity
+    let types: Array<ElementType>
+    let rarity: Rarity?
+    let images: CardImages
 }
 
-enum ElementType: String, CaseIterable {
+enum ElementType: String, CaseIterable,Codable{
     case colorless = "Colorless"
     case darkness = "Darkness"
     case dragon = "Dragon"
@@ -25,11 +27,17 @@ enum ElementType: String, CaseIterable {
     case water = "Water"
 }
 
-enum Rarity: String, CaseIterable{
+enum Rarity: String, CaseIterable, Codable {
+    case aceSpecRare = "ACE SPEC Rare"
     case amazingRare = "Amazing Rare"
+    case classicCollection = "Classic Collection"
     case common = "Common"
+    case doubleRare = "Double Rare"
+    case hyperRare = "Hyper Rare"
+    case illustrationRare = "Illustration Rare"
     case legend = "LEGEND"
     case promo = "Promo"
+    case radiantRare = "Radiant Rare"
     case rare = "Rare"
     case rareAce = "Rare ACE"
     case rareBreak = "Rare BREAK"
@@ -40,6 +48,7 @@ enum Rarity: String, CaseIterable{
     case rareHoloStar = "Rare Holo Star"
     case rareHoloV = "Rare Holo V"
     case rareHoloVMAX = "Rare Holo VMAX"
+    case rareHoloVSTAR = "Rare Holo VSTAR"
     case rarePrime = "Rare Prime"
     case rarePrismStar = "Rare Prism Star"
     case rareRainbow = "Rare Rainbow"
@@ -48,6 +57,15 @@ enum Rarity: String, CaseIterable{
     case rareShiny = "Rare Shiny"
     case rareShinyGX = "Rare Shiny GX"
     case rareUltra = "Rare Ultra"
+    case shinyRare = "Shiny Rare"
+    case shinyUltraRare = "Shiny Ultra Rare"
+    case specialIllustrationRare = "Special Illustration Rare"
+    case trainerGalleryRareHolo = "Trainer Gallery Rare Holo"
+    case ultraRare = "Ultra Rare"
     case uncommon = "Uncommon"
 }
 
+struct CardImages: Codable{
+    let small: String
+    let large: String
+}
