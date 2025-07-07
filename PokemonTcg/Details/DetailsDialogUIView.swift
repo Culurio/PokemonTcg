@@ -31,8 +31,8 @@ struct DetailsDialogUIView: View {
                     
                     VStack(alignment: .leading, spacing: 6) {
                         LabeledTextRow(label: "Name", value: pokemon?.name ?? "unknown")
-                        LabeledTextRow(label: "Type", value: pokemon?.type.first?.rawValue ?? "unknown")
-                        LabeledTextRow(label: "Rarity", value: pokemon?.rarity.rawValue ?? "unknown")
+                        LabeledTextRow(label: "Type", value: pokemon?.types.first?.rawValue ?? "unknown")
+                        LabeledTextRow(label: "Rarity", value: pokemon?.rarity?.rawValue ?? "unknown")
                     }
                     .font(.subheadline)
                     .padding(.horizontal)
@@ -50,7 +50,13 @@ struct DetailsDialogUIView: View {
 }
 
 #Preview {
-    let mockPokemon = PokemonCard(name: "Charizard", type: [.fire], rarity: .rare)
+    let mockImages = CardImages(
+                small: "",
+                large: "https://m.media-amazon.com/images/I/71nbfl-JklS._AC_SL1024_.jpg"
+            )
+
+        let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
+                .rare,images:mockImages)
     
     DetailsDialogUIView(pokemon: mockPokemon) {
         
