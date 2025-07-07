@@ -54,7 +54,13 @@ struct CardFavouriteUIView: View {
 
 
 #Preview {
-    let mockPokemon = PokemonCard(name: "Charizard", type: [.fire], rarity: .rare)
+    let mockImages = CardImages(
+            small: "",
+            large: "https://m.media-amazon.com/images/I/71nbfl-JklS._AC_SL1024_.jpg"
+        )
+
+    let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
+            .rare,images:mockImages)
 
     CardFavouriteUIView(pokemon:mockPokemon){
         
