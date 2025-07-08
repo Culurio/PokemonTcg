@@ -55,14 +55,11 @@ struct ImageView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            AsyncImage(url: URL(string: pokemon?.images.large ?? "")) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: cardSize.width, height: cardSize.height)
-            } placeholder: {
-                Color.gray.opacity(0.2)
-            }
+            PokemonAsyncImageView(
+                imageURL: pokemon?.images.large,
+                size: CGSize(width: 125, height: 160),
+                contentMode: .fit
+            )
             
             Image(systemName: "heart")
                 .foregroundColor(Color("cardTextBackground"))

@@ -22,12 +22,10 @@ struct DetailsDialogUIView: View {
             .offset(y: -20)
             ZStack(alignment: .topTrailing) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Image("Pokeball")
-                        .resizable()
-                        .scaledToFit()
-                        .scaleEffect(1.2)
-                        .background(Color("cardBackground"))
-                        .cornerRadius(12)
+                    PokemonAsyncImageView(
+                        imageURL: pokemon?.images.large,
+                        cornerRadius: 12
+                    )
                     
                     VStack(alignment: .leading, spacing: 6) {
                         LabeledTextRow(label: "Name", value: pokemon?.name ?? "unknown")
