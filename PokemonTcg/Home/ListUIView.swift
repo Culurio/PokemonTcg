@@ -15,8 +15,7 @@ struct ListUIView: View {
     let layout: ListLayoutStyle
 
     init(layout: ListLayoutStyle) {
-        let useCase = PokemonSingleton.shared.fetchPokemonCardsUseCase
-        _viewModel = StateObject(wrappedValue: PokemonViewModel(fetchPokemonCardsUseCase: useCase))
+        _viewModel = StateObject(wrappedValue: PokemonViewModel())
         self.layout = layout
     }
 

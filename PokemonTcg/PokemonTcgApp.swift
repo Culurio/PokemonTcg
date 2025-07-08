@@ -12,7 +12,7 @@ struct PokemonTcgApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            BottomNavUI()
         }
     }
 }
