@@ -6,31 +6,16 @@
 //
 import Foundation
 
-class PokemonTCGAPI {
-    static let shared = PokemonTCGAPI()
+final class PokemonNetworkManager: Sendable {
     private let baseURL = "https://api.pokemontcg.io/v2/cards"
 
-    func fetchCards(completion: @escaping ([PokemonCard]?) -> Void) {
+    func fetchCards() async throws -> [PokemonCard] {
         guard let url = URL(string: baseURL) else {
-            completion(nil)
-            return
+            throw URLError(.badURL)
         }
 
-        let request = URLRequest(url: url)
-
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            guard let data = data, error == nil else {
-                completion(nil)
-                return
-            }
-
-            do {
-                let response = try JSONDecoder().decode(CardListResponse.self, from: data)
-                completion(response.data)
-            } catch {
-                print("Decoding error:", error)
-                completion(nil)
-            }
-        }.resume()
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode(CardListResponse.self, from: data)
+        return response.data
     }
 }

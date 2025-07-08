@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol RemotePokemonDataSource {
+protocol RemotePokemonDataSource:Sendable {
     func fetchFromAPI() async throws -> [PokemonCard]
 }
 

@@ -5,33 +5,27 @@
 //  Created by Cláudio Costa on 07/07/2025.
 //
 
-import Foundation
-import Combine
+import SwiftUI
 
+@MainActor
 class PokemonViewModel: ObservableObject {
     @Published var state: PokemonScreenState = .idle
 
     private let fetchPokemonCardsUseCase: FetchPokemonCardsUseCase
 
-    init(fetchPokemonCardsUseCase: FetchPokemonCardsUseCase) {
-        self.fetchPokemonCardsUseCase = fetchPokemonCardsUseCase
+    init() {
+        self.fetchPokemonCardsUseCase = PokemonContainer.shared.fetchPokemonCardsUseCase
     }
 
     func loadPokemons() {
-        Task {
-            await MainActor.run {
-                self.state = .loading
-            }
+        self.state = .loading
 
+        Task {
             do {
                 let cards = try await fetchPokemonCardsUseCase.execute()
-                await MainActor.run {
-                    self.state = .success(cards)
-                }
+                self.state = .success(cards)
             } catch {
-                await MainActor.run {
-                    self.state = .failure("Failed to load Pokémon.")
-                }
+                self.state = .failure("Failed to load Pokémon.")
             }
         }
     }
