@@ -28,11 +28,10 @@ struct CardFavouriteUIView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color("cardBackground"))
 
-                Image("Pokeball")
-                    .resizable()
-                    .scaledToFit()
-                    .scaleEffect(1.5)
-                    .frame(width: cardWidth, height: cardHeight)
+                PokemonAsyncImageView(
+                    imageURL: pokemon?.images.large,
+                    contentMode: .fit
+                )
 
                 Image(systemName: "heart.fill")
                     .resizable()
