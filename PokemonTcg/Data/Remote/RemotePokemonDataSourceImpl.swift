@@ -8,11 +8,17 @@
 import Foundation
 
 actor RemotePokemonDataSourceImpl: RemotePokemonDataSource {
+    private let networkManager: PokemonNetworkManager
+
+    init(networkManager: PokemonNetworkManager) {
+        self.networkManager = networkManager
+    }
+
     func fetchFromAPI() async -> [PokemonCard] {
-        await withCheckedContinuation { continuation in
-            PokemonTCGAPI.shared.fetchCards { cards in
-                continuation.resume(returning: cards ?? [])
-            }
+        do {
+            return try await networkManager.fetchCards()
+        } catch {
+            return []
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol LocalPokemonDataSource {
+protocol LocalPokemonDataSource: Sendable {
     func getCachedPokemon() async -> [PokemonCard]
     func save(pokemon: [PokemonCard]) async
 }

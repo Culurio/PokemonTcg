@@ -7,7 +7,7 @@
 
 import Foundation
 
-class FetchPokemonCardsUseCase {
+struct FetchPokemonCardsUseCase {
     private let repository: PokemonRepository
 
     init(repository: PokemonRepository) {
