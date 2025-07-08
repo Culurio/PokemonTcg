@@ -15,27 +15,10 @@ struct CardUIView: View {
     let cardSize: CGSize = CGSize(width: 125, height: 160)
     let labelHeight: CGFloat = 40
     let cornerRadius: CGFloat = 8
-    let heartSize: CGSize = CGSize(width: 24, height: 25)
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            ZStack(alignment: .topTrailing) {
-                Color("cardBackground")
-                    .overlay(
-                        Image("Pokeball")
-                            .resizable()
-                            .scaleEffect(1.2)
-                            .scaledToFill()
-                            .frame(height: cardSize.height)
-                    )
-
-                Image(systemName: "heart")
-                    .foregroundColor(Color("cardTextBackground"))
-                    .frame(width: heartSize.width, height: heartSize.height)
-                    .padding(10)
-            }
-            .frame(width: cardSize.width, height: cardSize.height)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            ImageView(pokemon: pokemon)
             Text(pokemon?.name ?? "No name")
                 .frame(width: cardSize.width, height: labelHeight)
                 .background(Color("cardTextBackground"))
@@ -52,9 +35,41 @@ struct CardUIView: View {
 
 
 #Preview {
-    let mockPokemon = PokemonCard(name: "Charizard", type: [.fire], rarity: .rare)
+    let mockImages = CardImages(
+            small: "",
+            large: "https://m.media-amazon.com/images/I/71nbfl-JklS._AC_SL1024_.jpg"
+        )
 
+    let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
+            .rare,images:mockImages)
     CardUIView(pokemon:mockPokemon){
 
+    }
+}
+
+struct ImageView: View {
+    let pokemon: PokemonCard?
+    let cardSize: CGSize = CGSize(width: 125, height: 160)
+    let heartSize: CGSize = CGSize(width: 24, height: 25)
+    let cornerRadius: CGFloat = 8
+    
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            AsyncImage(url: URL(string: pokemon?.images.large ?? "")) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: cardSize.width, height: cardSize.height)
+            } placeholder: {
+                Color.gray.opacity(0.2)
+            }
+            
+            Image(systemName: "heart")
+                .foregroundColor(Color("cardTextBackground"))
+                .frame(width: heartSize.width, height: heartSize.height)
+                .padding(10)
+        }
+        .frame(width: cardSize.width, height: cardSize.height)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 }
