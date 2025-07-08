@@ -10,15 +10,20 @@ import SwiftUI
 struct ListUIView: View {
     @State private var query = ""
     @State private var selectedPokemon: PokemonCard? = nil
+    @StateObject private var viewModel: PokemonViewModel
+
     let layout: ListLayoutStyle
 
-    var columns: [GridItem] {
-        switch layout {
-        case .home:
-            return [GridItem(.flexible()), GridItem(.flexible())]
-        case .favorites:
-            return [GridItem(.flexible())]
-        }
+    init(layout: ListLayoutStyle) {
+        let useCase = PokemonSingleton.shared.fetchPokemonCardsUseCase
+        _viewModel = StateObject(wrappedValue: PokemonViewModel(fetchPokemonCardsUseCase: useCase))
+        self.layout = layout
+    }
+
+    private var columns: [GridItem] {
+        layout == .home
+            ? [GridItem(.flexible()), GridItem(.flexible())]
+            : [GridItem(.flexible())]
     }
 
     var body: some View {
@@ -26,37 +31,66 @@ struct ListUIView: View {
             NavigationStack {
                 VStack(spacing: 0) {
                     SearchView(query: $query)
-
-                    ScrollView {
-                        LazyVGrid(columns: columns, spacing: layout == .home ? 45 : 24) {
-                            ForEach(0..<20, id: \.self) { number in
-                                let pokemon = PokemonCard(
-                                    name: "Charizard \(number)",
-                                    type: [.fire],
-                                    rarity: .rare
-                                )
-
-                                if layout == .home {
-                                    CardUIView(pokemon: pokemon) {
-                                        selectedPokemon = pokemon
-                                    }
-                                } else {
-                                    CardFavouriteUIView(pokemon: pokemon) {
-                                        selectedPokemon = pokemon
-                                    }
-                                }
-                            }
-                        }
+                    content
                         .padding()
-                    }
                 }
+                .onAppear(perform: viewModel.loadPokemons)
             }
 
-            if let selected = selectedPokemon {
-                PokemonModalOverlayView(pokemon: selected) {
+            if let pokemon = selectedPokemon {
+                PokemonModalOverlayView(pokemon: pokemon) {
                     selectedPokemon = nil
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .idle, .loading:
+            loadingView
+
+        case .failure(let message):
+            errorView(message: message)
+
+        case .success(let cards):
+            cardsGrid(cards)
+        }
+    }
+
+    private var loadingView: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+    }
+
+    private func errorView(message: String) -> some View {
+        VStack(spacing: 12) {
+            Text(message)
+                .foregroundColor(.red)
+            Button("Retry", action: viewModel.loadPokemons)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+    }
+
+    private func cardsGrid(_ cards: [PokemonCard]) -> some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: layout == .home ? 45 : 24) {
+                ForEach(cards) { pokemon in
+                    cardView(for: pokemon)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func cardView(for pokemon: PokemonCard) -> some View {
+        let select = { selectedPokemon = pokemon }
+
+        if layout == .home {
+            CardUIView(pokemon: pokemon, onTap: select)
+        } else {
+            CardFavouriteUIView(pokemon: pokemon, onTap: select)
         }
     }
 }
@@ -70,5 +104,5 @@ enum ListLayoutStyle {
 
 
 #Preview {
-    ListUIView(layout: ListLayoutStyle.favorites)
+   ListUIView(layout: ListLayoutStyle.home)
 }
