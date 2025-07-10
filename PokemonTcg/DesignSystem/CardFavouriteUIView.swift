@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CardFavouriteUIView: View {
     var pokemon: PokemonCard?
+    var onToggleFavourite: () -> Void
     var onTap: () -> Void
 
     private let cardWidth: CGFloat = 120
@@ -33,13 +34,17 @@ struct CardFavouriteUIView: View {
                     contentMode: .fit
                 )
 
-                Image(systemName: "heart.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: heartSize, height: heartSize)
-                    .foregroundColor(.black)
-                    .padding(6)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                Button(action: {
+                    onToggleFavourite()
+                }) {
+                    Image(systemName: pokemon?.isFavourite ?? true ? "heart.fill" : "heart")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: heartSize, height: heartSize)
+                        .padding(6)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                        .foregroundColor(.red)
+                }
             }
             .frame(width: cardWidth, height: cardHeight)
         }
@@ -61,7 +66,7 @@ struct CardFavouriteUIView: View {
     let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
             .rare,images:mockImages)
 
-    CardFavouriteUIView(pokemon:mockPokemon){
+    CardFavouriteUIView(pokemon:mockPokemon, onToggleFavourite: {}){
         
     }
 }

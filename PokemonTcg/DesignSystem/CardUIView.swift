@@ -10,7 +10,7 @@ import SwiftUI
 struct CardUIView: View {
     let pokemon: PokemonCard?
     var onTap: () -> Void
-
+    var onToggleFavourite: () -> Void
 
     let cardSize: CGSize = CGSize(width: 125, height: 160)
     let labelHeight: CGFloat = 40
@@ -18,7 +18,8 @@ struct CardUIView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            ImageView(pokemon: pokemon)
+            ImageView(pokemon: pokemon, isFavourite: pokemon?.isFavourite ?? false, onToggleFavourite: onToggleFavourite)
+
             Text(pokemon?.name ?? "No name")
                 .frame(width: cardSize.width, height: labelHeight)
                 .background(Color("cardTextBackground"))
@@ -42,17 +43,19 @@ struct CardUIView: View {
 
     let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
             .rare,images:mockImages)
-    CardUIView(pokemon:mockPokemon){
-
-    }
+    CardUIView(pokemon:mockPokemon, onTap: {}, onToggleFavourite: {})
 }
 
 struct ImageView: View {
     let pokemon: PokemonCard?
+    let isFavourite: Bool
+    let onToggleFavourite: () -> Void
+
     let cardSize: CGSize = CGSize(width: 125, height: 160)
     let heartSize: CGSize = CGSize(width: 24, height: 25)
     let cornerRadius: CGFloat = 8
-    
+
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             PokemonAsyncImageView(
@@ -61,10 +64,14 @@ struct ImageView: View {
                 contentMode: .fit
             )
             
-            Image(systemName: "heart")
-                .foregroundColor(Color("cardTextBackground"))
-                .frame(width: heartSize.width, height: heartSize.height)
-                .padding(10)
+            Button(action: {
+                onToggleFavourite()
+            }) {
+                Image(systemName: isFavourite ? "heart.fill" : "heart")
+                    .foregroundColor(.red)
+                    .frame(width: heartSize.width, height: heartSize.height)
+                    .padding(10)
+            }
         }
         .frame(width: cardSize.width, height: cardSize.height)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
