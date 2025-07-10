@@ -5,14 +5,45 @@
 //  Created by Cláudio Costa on 26/06/2025.
 //
 
-struct PokemonCard: Codable, Identifiable{
+struct PokemonCard: Codable, Identifiable {
     let id: String
     let name: String
-    let types: Array<ElementType>
+    let types: [ElementType]
     let rarity: Rarity?
     let images: CardImages
-}
+    var isFavourite: Bool = false
 
+    private enum CodingKeys: String, CodingKey {
+        case id, name, types, rarity, images
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        types = try container.decode([ElementType].self, forKey: .types)
+        rarity = try container.decodeIfPresent(Rarity.self, forKey: .rarity)
+        images = try container.decode(CardImages.self, forKey: .images)
+        isFavourite = false
+    }
+
+    init(id: String, name: String, types: [ElementType], rarity: Rarity, images: CardImages) {
+        self.id = id
+        self.name = name
+        self.types = types
+        self.rarity = rarity
+        self.images = images
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(types, forKey: .types)
+        try container.encodeIfPresent(rarity, forKey: .rarity)
+        try container.encode(images, forKey: .images)
+    }
+}
 enum ElementType: String, CaseIterable,Codable{
     case colorless = "Colorless"
     case darkness = "Darkness"

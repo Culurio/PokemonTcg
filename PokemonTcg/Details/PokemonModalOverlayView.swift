@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PokemonModalOverlayView: View {
     let pokemon: PokemonCard
+    let onToggleFavourite: () -> Void
     let onDismiss: () -> Void
 
     var body: some View {
@@ -19,7 +20,10 @@ struct PokemonModalOverlayView: View {
                     onDismiss()
                 }
 
-            DetailsDialogUIView(pokemon: pokemon) {
+            DetailsDialogUIView(
+                pokemon: pokemon,
+                onToggleFavourite: onToggleFavourite
+            ) {
                 onDismiss()
             }
             .transition(.scale)
@@ -35,7 +39,9 @@ struct PokemonModalOverlayView: View {
         let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
                 .rare,images:mockImages)
 
-    PokemonModalOverlayView(pokemon:mockPokemon){
-        
-    }
+    PokemonModalOverlayView(
+        pokemon: mockPokemon,
+        onToggleFavourite: {},
+        onDismiss: {},
+    )
 }

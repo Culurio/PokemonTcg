@@ -9,8 +9,9 @@ import SwiftUI
 
 struct DetailsDialogUIView: View {
     var pokemon: PokemonCard?
+    var onToggleFavourite: () -> Void
     var onClose: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Button(action: onClose) {
@@ -26,7 +27,7 @@ struct DetailsDialogUIView: View {
                         imageURL: pokemon?.images.large,
                         cornerRadius: 12
                     )
-                    
+
                     VStack(alignment: .leading, spacing: 6) {
                         LabeledTextRow(label: "Name", value: pokemon?.name ?? "unknown")
                         LabeledTextRow(label: "Type", value: pokemon?.types.first?.rawValue ?? "unknown")
@@ -35,10 +36,16 @@ struct DetailsDialogUIView: View {
                     .font(.subheadline)
                     .padding(.horizontal)
                 }
-                
-                Image(systemName: "heart")
-                    .scaleEffect(2)
-                    .padding(20)
+
+                Button(action: {
+                    onToggleFavourite()
+                    print("IsFavourite state \(pokemon?.isFavourite ?? true)")
+                }) {
+                    Image(systemName: pokemon?.isFavourite ?? true ? "heart.fill" : "heart")
+                        .foregroundColor(.red)
+                        .scaleEffect(2)
+                        .padding(20)
+                }
             }
             .padding()
             .background(RoundedRectangle(cornerRadius: 8).fill(Color("cardTextBackground")))
@@ -49,14 +56,14 @@ struct DetailsDialogUIView: View {
 
 #Preview {
     let mockImages = CardImages(
-                small: "",
-                large: "https://m.media-amazon.com/images/I/71nbfl-JklS._AC_SL1024_.jpg"
-            )
+        small: "",
+        large: "https://m.media-amazon.com/images/I/71nbfl-JklS._AC_SL1024_.jpg"
+    )
 
-        let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
-                .rare,images:mockImages)
-    
-    DetailsDialogUIView(pokemon: mockPokemon) {
-        
+    let mockPokemon = PokemonCard(id: "1",name: "Charizard", types: [.fire], rarity:
+            .rare,images:mockImages)
+
+    DetailsDialogUIView(pokemon: mockPokemon, onToggleFavourite: {}) {
+
     }
 }
