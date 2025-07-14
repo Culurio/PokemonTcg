@@ -8,6 +8,6 @@
 import Foundation
 
 protocol RemotePokemonDataSource:Sendable {
-    func fetchFromAPI() async throws -> [PokemonCard]
+    func fetchFromAPI(filter: PokemonFilter) async throws -> [PokemonCard]
 }
 

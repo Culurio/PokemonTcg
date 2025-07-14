@@ -8,7 +8,7 @@
 import Foundation
 
 protocol LocalPokemonDataSource: Sendable {
-    func getCachedPokemon() async -> [PokemonCard]
-    func save(pokemon: [PokemonCard]) async
+    func getCachedPokemon(for filter: PokemonFilter) async -> [PokemonCard]?
+    func save(pokemon: [PokemonCard], for filter: PokemonFilter) async
 }
 

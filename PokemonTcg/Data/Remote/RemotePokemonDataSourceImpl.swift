@@ -14,9 +14,9 @@ actor RemotePokemonDataSourceImpl: RemotePokemonDataSource {
         self.networkManager = networkManager
     }
 
-    func fetchFromAPI() async -> [PokemonCard] {
+    func fetchFromAPI(filter: PokemonFilter) async -> [PokemonCard] {
         do {
-            return try await networkManager.fetchCards()
+            return try await networkManager.fetchCards(filter: filter)
         } catch {
             return []
         }

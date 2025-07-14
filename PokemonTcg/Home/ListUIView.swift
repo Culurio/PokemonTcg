@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ListUIView: View {
     @State private var query = ""
-    @State private var selectedPokemon: PokemonCard? = nil
+    @State var filterType: ElementType? = nil
+    @State var filterRarity: Rarity? = nil
+    @State private var selectedPokemonID: String? = nil
     @StateObject private var viewModel: PokemonViewModel
 
     let layout: ListLayoutStyle
@@ -19,27 +21,61 @@ struct ListUIView: View {
         self.layout = layout
     }
 
-    private var columns: [GridItem] {
-        layout == .home
-            ? [GridItem(.flexible()), GridItem(.flexible())]
-            : [GridItem(.flexible())]
+    private var selectedPokemon: PokemonCard? {
+        guard
+            let id = selectedPokemonID,
+            case let .success(cards) = viewModel.state
+        else { return nil }
+
+        return cards.first(where: { $0.id == id })
+    }
+
+    private func reloadWithFilters() {
+        let filter = PokemonFilter(
+            showOnlyFavourites: layout == .favorites,
+            rarity: filterRarity,
+            type: filterType
+        )
+
+        viewModel.loadPokemons(filter: filter)
     }
 
     var body: some View {
         ZStack {
             NavigationStack {
                 VStack(spacing: 0) {
-                    SearchView(query: $query)
+                    SearchView(query: $query, selectedType: $filterType, selectedRarity: $filterRarity)
                     content
                         .padding()
                 }
-                .onAppear(perform: viewModel.loadPokemons)
+                .onAppear {
+                        reloadWithFilters()
+                }
+                .onChange(of: filterType) {
+                    reloadWithFilters()
+                }
+
+                .onChange(of: filterRarity) {
+                    reloadWithFilters()
+                }
             }
 
+            modalOverlay
+        }
+    }
+
+    private var modalOverlay: some View {
+        Group {
             if let pokemon = selectedPokemon {
-                PokemonModalOverlayView(pokemon: pokemon) {
-                    selectedPokemon = nil
-                }
+                PokemonModalOverlayView(
+                    pokemon: pokemon,
+                    onToggleFavourite: {
+                        viewModel.toggleFavourite(for: pokemon)
+                    },
+                    onDismiss: {
+                        selectedPokemonID = nil
+                    }
+                )
             }
         }
     }
@@ -47,14 +83,14 @@ struct ListUIView: View {
     @ViewBuilder
     private var content: some View {
         switch viewModel.state {
-        case .idle, .loading:
-            loadingView
+            case .idle, .loading:
+                loadingView
 
-        case .failure(let message):
-            errorView(message: message)
+            case .failure(let message):
+                errorView(message: message)
 
-        case .success(let cards):
-            cardsGrid(cards)
+            case .success(let cards):
+                cardsGrid(cards)
         }
     }
 
@@ -67,14 +103,16 @@ struct ListUIView: View {
         VStack(spacing: 12) {
             Text(message)
                 .foregroundColor(.red)
-            Button("Retry", action: viewModel.loadPokemons)
+            Button("Retry"){
+                viewModel.loadPokemons()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 
     private func cardsGrid(_ cards: [PokemonCard]) -> some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: layout == .home ? 45 : 24) {
+            LazyVGrid(columns: layout.columns, spacing: layout.spacing) {
                 ForEach(cards) { pokemon in
                     cardView(for: pokemon)
                 }
@@ -84,24 +122,44 @@ struct ListUIView: View {
 
     @ViewBuilder
     private func cardView(for pokemon: PokemonCard) -> some View {
-        let select = { selectedPokemon = pokemon }
-
         if layout == .home {
-            CardUIView(pokemon: pokemon, onTap: select)
+            CardUIView(
+                pokemon: pokemon,
+                onTap: { selectedPokemonID = pokemon.id },
+                onToggleFavourite: { viewModel.toggleFavourite(for: pokemon, layout: layout) }
+            )
         } else {
-            CardFavouriteUIView(pokemon: pokemon, onTap: select)
+            CardFavouriteUIView(
+                pokemon: pokemon,
+                onToggleFavourite: { viewModel.toggleFavourite(for: pokemon, layout: layout) },
+                onTap: { selectedPokemonID = pokemon.id }
+            )
+        }
+    }
+}
+
+enum ListLayoutStyle {
+    case home
+    case favorites
+
+    var columns: [GridItem] {
+        switch self {
+            case .home:
+                [GridItem(.flexible()), GridItem(.flexible())]
+            case .favorites:
+                [GridItem(.flexible())]
+        }
+    }
+
+    var spacing: CGFloat {
+        switch self {
+            case .home: 45
+            case .favorites: 24
         }
     }
 }
 
 
-enum ListLayoutStyle {
-    case home
-    case favorites
-}
-
-
-
 #Preview {
-   ListUIView(layout: ListLayoutStyle.home)
+    ListUIView(layout: .home)
 }

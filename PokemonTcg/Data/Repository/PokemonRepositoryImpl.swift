@@ -14,15 +14,15 @@ actor PokemonRepositoryImpl: PokemonRepository {
         self.remotePokemonDataSource = remote
     }
 
-    func fetchPokemons() async throws -> [PokemonCard] {
-        let cached = await localPokemonDataSource.getCachedPokemon()
-        if !cached.isEmpty {
+    func fetchPokemons(filter: PokemonFilter) async throws -> [PokemonCard] {
+        if let cached = await localPokemonDataSource.getCachedPokemon(for: filter) {
             return cached
         } else {
-            let remoteCards = try await remotePokemonDataSource.fetchFromAPI()
-            await localPokemonDataSource.save(pokemon: remoteCards)
+            let remoteCards = try await remotePokemonDataSource.fetchFromAPI(filter: filter)
+            await localPokemonDataSource.save(pokemon: remoteCards, for: filter)
             return remoteCards
         }
-    }}
+    }
+}
 
 

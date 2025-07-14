@@ -9,8 +9,28 @@ import Foundation
 final class PokemonNetworkManager: Sendable {
     private let baseURL = "https://api.pokemontcg.io/v2/cards"
 
-    func fetchCards() async throws -> [PokemonCard] {
-        guard let url = URL(string: baseURL) else {
+    func fetchCards(filter: PokemonFilter) async throws -> [PokemonCard] {
+        var components = URLComponents(string: baseURL)
+        var queryParts: [String] = []
+
+        if let rarity = filter.rarity?.rawValue.lowercased() {
+            let formattedRarity = rarity.contains(" ") ? "\"\(rarity)\"" : rarity
+            queryParts.append("rarity:\(formattedRarity)")
+        }
+
+        if let type = filter.type?.rawValue.lowercased() {
+            let formattedType = type.contains(" ") ? "\"\(type)\"" : type
+            queryParts.append("types:\(formattedType)")
+        }
+
+        if !queryParts.isEmpty {
+            let query = queryParts.joined(separator: " ")
+            components?.queryItems = [
+                URLQueryItem(name: "q", value: query)
+            ]
+        }
+
+        guard let url = components?.url else {
             throw URLError(.badURL)
         }
 
@@ -19,3 +39,4 @@ final class PokemonNetworkManager: Sendable {
         return response.data
     }
 }
+
