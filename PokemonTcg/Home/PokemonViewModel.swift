@@ -19,16 +19,20 @@ class PokemonViewModel: ObservableObject {
         self.favouritesRepository = FavouritesRepository()
     }
 
-    func loadPokemons() {
+    func loadPokemons(filter: PokemonFilter = PokemonFilter()) {
         self.state = .loading
 
         Task {
             do {
-                var cards = try await fetchPokemonCardsUseCase.execute()
+                var cards = try await fetchPokemonCardsUseCase.execute(filter: filter)
                 let favouriteIDs = favouritesRepository.getFavouriteIDs()
 
                 for i in cards.indices {
                     cards[i].isFavourite = favouriteIDs.contains(cards[i].id)
+                }
+
+                if filter.showOnlyFavourites {
+                    cards = cards.filter { favouriteIDs.contains($0.id) }
                 }
 
                 self.state = .success(cards)
@@ -37,31 +41,7 @@ class PokemonViewModel: ObservableObject {
             }
         }
     }
-
-    func loadFavouritePokemons() {
-        self.state = .loading
-
-        Task {
-            do {
-                let cards = try await fetchPokemonCardsUseCase.execute()
-                let favouriteIDs = favouritesRepository.getFavouriteIDs()
-
-                let favouriteCards = cards
-                    .filter { favouriteIDs.contains($0.id) }
-                    .map { card -> PokemonCard in
-                        var mutableCard = card
-                        mutableCard.isFavourite = true
-                        return mutableCard
-                    }
-
-                self.state = .success(favouriteCards)
-            } catch {
-                self.state = .failure("Failed to load favourite Pokémon.")
-            }
-        }
-    }
-
-
+    
     func toggleFavourite(for card: PokemonCard, layout: ListLayoutStyle = .home) {
         guard case .success(var cards) = state else { return }
 

@@ -21,7 +21,7 @@ struct PokemonCard: Codable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
-        types = try container.decode([ElementType].self, forKey: .types)
+        types = try container.decodeIfPresent([ElementType].self, forKey: .types) ?? []
         rarity = try container.decodeIfPresent(Rarity.self, forKey: .rarity)
         images = try container.decode(CardImages.self, forKey: .images)
         isFavourite = false

@@ -14,7 +14,7 @@ struct FetchPokemonCardsUseCase {
         self.repository = repository
     }
 
-    func execute() async throws -> [PokemonCard] {
-        return try await repository.fetchPokemons()
+    func execute(filter: PokemonFilter = PokemonFilter()) async throws -> [PokemonCard] {
+        return try await repository.fetchPokemons(filter: filter)
     }
 }

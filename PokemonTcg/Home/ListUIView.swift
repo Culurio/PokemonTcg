@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ListUIView: View {
     @State private var query = ""
+    @State var filterType: ElementType? = nil
+    @State var filterRarity: Rarity? = nil
     @State private var selectedPokemonID: String? = nil
     @StateObject private var viewModel: PokemonViewModel
 
@@ -28,20 +30,33 @@ struct ListUIView: View {
         return cards.first(where: { $0.id == id })
     }
 
+    private func reloadWithFilters() {
+        let filter = PokemonFilter(
+            showOnlyFavourites: layout == .favorites,
+            rarity: filterRarity,
+            type: filterType
+        )
+
+        viewModel.loadPokemons(filter: filter)
+    }
+
     var body: some View {
         ZStack {
             NavigationStack {
                 VStack(spacing: 0) {
-                    SearchView(query: $query)
+                    SearchView(query: $query, selectedType: $filterType, selectedRarity: $filterRarity)
                     content
                         .padding()
                 }
                 .onAppear {
-                    if layout == .favorites {
-                        viewModel.loadFavouritePokemons()
-                    } else {
-                        viewModel.loadPokemons()
-                    }
+                        reloadWithFilters()
+                }
+                .onChange(of: filterType) {
+                    reloadWithFilters()
+                }
+
+                .onChange(of: filterRarity) {
+                    reloadWithFilters()
                 }
             }
 
@@ -88,12 +103,13 @@ struct ListUIView: View {
         VStack(spacing: 12) {
             Text(message)
                 .foregroundColor(.red)
-            Button("Retry", action: viewModel.loadPokemons)
+            Button("Retry"){
+                viewModel.loadPokemons()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 
-    // MARK: - Cards Grid
     private func cardsGrid(_ cards: [PokemonCard]) -> some View {
         ScrollView {
             LazyVGrid(columns: layout.columns, spacing: layout.spacing) {
@@ -142,6 +158,7 @@ enum ListLayoutStyle {
         }
     }
 }
+
 
 #Preview {
     ListUIView(layout: .home)

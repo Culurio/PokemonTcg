@@ -6,5 +6,5 @@
 //
 
 protocol PokemonRepository: Sendable {
-    func fetchPokemons() async throws -> [PokemonCard]
+    func fetchPokemons(filter: PokemonFilter) async throws -> [PokemonCard]
 }

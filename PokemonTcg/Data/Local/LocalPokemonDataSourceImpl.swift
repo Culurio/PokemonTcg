@@ -8,15 +8,13 @@
 import Foundation
 
 actor LocalPokemonDataSourceImpl: LocalPokemonDataSource {
-    private var cache: [PokemonCard] = []
+    private var cache: [PokemonFilter: [PokemonCard]] = [:]
 
-    func getCachedPokemon() async -> [PokemonCard] {
-        return cache
+    func getCachedPokemon(for filter: PokemonFilter) async -> [PokemonCard]? {
+        return cache[filter]
     }
 
-    func save(pokemon: [PokemonCard]) async {
-        cache = pokemon
+    func save(pokemon: [PokemonCard], for filter: PokemonFilter) async {
+        cache[filter] = pokemon
     }
 }
-
-
