@@ -11,5 +11,5 @@ struct PokemonFilter: Equatable,Hashable {
     var showOnlyFavourites: Bool = false
     var rarity: Rarity? = nil
     var type: ElementType? = nil
-    //var searchQuery: String? = nil
+    var searchQuery: String = ""
 }

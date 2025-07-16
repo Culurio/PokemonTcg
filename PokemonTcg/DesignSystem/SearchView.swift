@@ -6,19 +6,32 @@
 //
 import SwiftUI
 
-
 struct SearchView: View {
     @Binding var query: String
     @Binding var selectedType: ElementType?
     @Binding var selectedRarity: Rarity?
+
+    @State var debounceText:String = ""
+
+    private func write() async {
+        query = debounceText
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
-                TextField("Search...", text: $query)
+
+                TextField("Search...", text: $debounceText)
                     .textFieldStyle(PlainTextFieldStyle())
+                    .task(id: debounceText) {
+                        if !debounceText.isEmpty {
+                            try? await Task.sleep(for: .seconds(1.5))
+                            guard !Task.isCancelled else {return}
+                        }
+                        await write()
+                    }
             }
             .padding(8)
             .background(Color("filterBackground"))

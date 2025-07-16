@@ -34,15 +34,6 @@ struct PokemonCard: Codable, Identifiable {
         self.rarity = rarity
         self.images = images
     }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(name, forKey: .name)
-        try container.encode(types, forKey: .types)
-        try container.encodeIfPresent(rarity, forKey: .rarity)
-        try container.encode(images, forKey: .images)
-    }
 }
 enum ElementType: String, CaseIterable,Codable{
     case colorless = "Colorless"
