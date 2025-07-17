@@ -1,15 +1,19 @@
 //
-//  PokemonRepositoryImpl.swift
+//  File.swift
 //  PokemonTcg
 //
 //  Created by Cláudio Costa on 30/06/2025.
 //
 
-actor PokemonRepositoryImpl: PokemonRepository {
-    let localPokemonDataSource: LocalPokemonDataSource
-    let remotePokemonDataSource: RemotePokemonDataSource
+protocol PokemonRepositoryProtocol: Sendable {
+    func fetchPokemons(filter: PokemonFilter) async throws -> [PokemonCard]
+}
 
-    init(local: LocalPokemonDataSource, remote: RemotePokemonDataSource) {
+actor PokemonRepository: PokemonRepositoryProtocol {
+    let localPokemonDataSource: LocalPokemonDataSourceProtocol
+    let remotePokemonDataSource: RemotePokemonDataSourceProtocol
+
+    init(local: LocalPokemonDataSourceProtocol, remote: RemotePokemonDataSourceProtocol) {
         self.localPokemonDataSource = local
         self.remotePokemonDataSource = remote
     }
@@ -24,5 +28,3 @@ actor PokemonRepositoryImpl: PokemonRepository {
         }
     }
 }
-
-

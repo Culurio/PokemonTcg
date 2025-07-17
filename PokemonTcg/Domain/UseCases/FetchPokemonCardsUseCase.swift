@@ -8,9 +8,9 @@
 import Foundation
 
 struct FetchPokemonCardsUseCase {
-    private let repository: PokemonRepository
+    private let repository: PokemonRepositoryProtocol
 
-    init(repository: PokemonRepository) {
+    init(repository: PokemonRepositoryProtocol) {
         self.repository = repository
     }
 
