@@ -13,20 +13,19 @@ final class PokemonNetworkManager: Sendable {
         var components = URLComponents(string: baseURL)
         var queryParts: [String] = []
 
-        if let rarity = filter.rarity?.rawValue.lowercased() {
-            let formattedRarity = rarity.contains(" ") ? "\"\(rarity)\"" : rarity
-            queryParts.append("rarity:\(formattedRarity)")
+        func appendQueryPart(_ key: String, value: String?) {
+            guard let value = value?.lowercased(), !value.isEmpty else { return }
+            let formatted = value.contains(" ") ? "\"\(value)\"" : value
+            queryParts.append("\(key):\(formatted)")
         }
 
-        if let type = filter.type?.rawValue.lowercased() {
-            let formattedType = type.contains(" ") ? "\"\(type)\"" : type
-            queryParts.append("types:\(formattedType)")
-        }
+        appendQueryPart("name", value: filter.searchQuery.isEmpty ? nil : filter.searchQuery)
+        appendQueryPart("rarity", value: filter.rarity?.rawValue)
+        appendQueryPart("types", value: filter.type?.rawValue)
 
         if !queryParts.isEmpty {
-            let query = queryParts.joined(separator: " ")
             components?.queryItems = [
-                URLQueryItem(name: "q", value: query)
+                URLQueryItem(name: "q", value: queryParts.joined(separator: " "))
             ]
         }
 
@@ -39,4 +38,3 @@ final class PokemonNetworkManager: Sendable {
         return response.data
     }
 }
-

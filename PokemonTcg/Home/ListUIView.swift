@@ -34,7 +34,8 @@ struct ListUIView: View {
         let filter = PokemonFilter(
             showOnlyFavourites: layout == .favorites,
             rarity: filterRarity,
-            type: filterType
+            type: filterType,
+            searchQuery: query
         )
 
         viewModel.loadPokemons(filter: filter)
@@ -49,7 +50,10 @@ struct ListUIView: View {
                         .padding()
                 }
                 .onAppear {
-                        reloadWithFilters()
+                    reloadWithFilters()
+                }
+                .onChange(of: query){
+                    reloadWithFilters()
                 }
                 .onChange(of: filterType) {
                     reloadWithFilters()

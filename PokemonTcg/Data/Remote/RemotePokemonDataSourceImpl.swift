@@ -15,11 +15,22 @@ actor RemotePokemonDataSourceImpl: RemotePokemonDataSource {
     }
 
     func fetchFromAPI(filter: PokemonFilter) async -> [PokemonCard] {
-        do {
-            return try await networkManager.fetchCards(filter: filter)
-        } catch {
-            return []
+        var attempt = 0
+        let retries = 3
+        var delay: UInt64 = 300_000_000
+
+        while attempt < retries {
+            do {
+                return try await networkManager.fetchCards(filter: filter)
+            } catch {
+                attempt += 1
+                if attempt < retries {
+                    try? await Task.sleep(nanoseconds: delay)
+                    delay *= 2
+                }
+            }
         }
+        return []
     }
 }
 

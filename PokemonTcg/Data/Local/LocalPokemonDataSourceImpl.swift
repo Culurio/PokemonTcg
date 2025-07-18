@@ -15,6 +15,9 @@ actor LocalPokemonDataSourceImpl: LocalPokemonDataSource {
     }
 
     func save(pokemon: [PokemonCard], for filter: PokemonFilter) async {
+        guard !pokemon.isEmpty else {
+            return
+        }
         cache[filter] = pokemon
     }
 }
