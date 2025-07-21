@@ -18,7 +18,7 @@ actor RemotePokemonDataSource: RemotePokemonDataSourceProtocol {
         self.networkManager = networkManager
     }
 
-    func fetchFromAPI(filter: PokemonFilter) async -> [PokemonCard] {
+    func fetchFromAPI(filter: PokemonFilter) async throws -> [PokemonCard] {
         var attempt = 0
         let retries = 3
         var delay: UInt64 = 300_000_000
@@ -31,10 +31,14 @@ actor RemotePokemonDataSource: RemotePokemonDataSourceProtocol {
                 if attempt < retries {
                     try? await Task.sleep(nanoseconds: delay)
                     delay *= 2
+                } else {
+                    throw error
                 }
             }
         }
-        return []
+
+        throw URLError(.unknown)
     }
 }
+
 

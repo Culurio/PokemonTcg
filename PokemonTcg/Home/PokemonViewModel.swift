@@ -36,8 +36,17 @@ class PokemonViewModel: ObservableObject {
                 }
 
                 self.state = .success(cards)
-            } catch {
-                self.state = .failure("Failed to load Pokémon.")
+            } catch let error as PokemonDataError {
+                switch error {
+                    case .network:
+                        self.state = .failure("No internet connection.")
+                    case .decoding:
+                        self.state = .failure("Could not parse Pokémon data.")
+                    case .emptyResponse:
+                        self.state = .failure("Pokemon not found.")
+                    case .unknown:
+                        self.state = .failure("Something went wrong.")
+                }
             }
         }
     }

@@ -14,7 +14,24 @@ struct FetchPokemonCardsUseCase {
         self.repository = repository
     }
 
-    func execute(filter: PokemonFilter = PokemonFilter()) async throws -> [PokemonCard] {
-        return try await repository.fetchPokemons(filter: filter)
+    func execute(filter: PokemonFilter) async throws -> [PokemonCard] {
+        do {
+            let pokemons = try await repository.fetchPokemons(filter: filter)
+            guard !pokemons.isEmpty else {
+                throw PokemonDataError.emptyResponse
+            }
+            return pokemons
+        } catch {
+            switch error {
+                case is URLError:
+                    throw PokemonDataError.network
+                case is DecodingError:
+                    throw PokemonDataError.decoding
+                case let pokemonError as PokemonDataError:
+                    throw pokemonError
+                default:
+                    throw PokemonDataError.unknown
+            }
+        }
     }
 }

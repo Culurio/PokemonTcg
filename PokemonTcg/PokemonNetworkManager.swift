@@ -33,8 +33,12 @@ final class PokemonNetworkManager: Sendable {
             throw URLError(.badURL)
         }
 
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let response = try JSONDecoder().decode(CardListResponse.self, from: data)
-        return response.data
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let response = try JSONDecoder().decode(CardListResponse.self, from: data)
+            return response.data
+        } catch {
+            throw error
+        }
     }
 }
