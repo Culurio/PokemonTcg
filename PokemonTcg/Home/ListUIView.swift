@@ -63,6 +63,9 @@ struct ListUIView: View {
                 .onChange(of: filterRarity) {
                     reloadWithFilters()
                 }
+                .refreshable {
+                    reloadWithFilters()
+                }
             }
 
             modalOverlay
