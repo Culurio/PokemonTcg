@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ListUIView: View {
+    @State private var rotationAngle: Double = 0
     @State private var query = ""
     @State var filterType: ElementType? = nil
     @State var filterRarity: Rarity? = nil
@@ -62,6 +63,9 @@ struct ListUIView: View {
                 .onChange(of: filterRarity) {
                     reloadWithFilters()
                 }
+                .refreshable {
+                    reloadWithFilters()
+                }
             }
 
             modalOverlay
@@ -99,16 +103,32 @@ struct ListUIView: View {
     }
 
     private var loadingView: some View {
-        ProgressView()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        VStack {
+            Image("Pokeball")
+                .resizable()
+                .frame(width: 60, height: 60)
+                .rotationEffect(Angle(degrees: rotationAngle))
+                .onAppear {
+                    withAnimation(Animation.linear(duration: 1).repeatForever(autoreverses: false)) {
+                        rotationAngle = 360
+                    }
+                }
+                .onDisappear {
+                    rotationAngle = 0
+                }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 
     private func errorView(message: String) -> some View {
         VStack(spacing: 12) {
+            Image("ErrorImage")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
             Text(message)
                 .foregroundColor(.red)
             Button("Retry"){
-                viewModel.loadPokemons()
+                reloadWithFilters()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
