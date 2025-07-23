@@ -5,6 +5,8 @@
 //  Created by Cláudio Costa on 26/06/2025.
 //
 
+import Foundation
+
 struct PokemonCard: Codable, Identifiable {
     let id: String
     let name: String
@@ -48,6 +50,11 @@ enum ElementType: String, CaseIterable,Codable{
     case psychic = "Psychic"
     case water = "Water"
 }
+extension ElementType {
+    var localized: String {
+        NSLocalizedString(self.rawValue, comment: "Element type")
+    }
+}
 
 enum Rarity: String, CaseIterable, Codable {
     case aceSpecRare = "ACE SPEC Rare"
@@ -85,6 +92,11 @@ enum Rarity: String, CaseIterable, Codable {
     case trainerGalleryRareHolo = "Trainer Gallery Rare Holo"
     case ultraRare = "Ultra Rare"
     case uncommon = "Uncommon"
+}
+extension Rarity {
+    var localized: String {
+        NSLocalizedString(self.rawValue, comment: "Card rarity")
+    }
 }
 
 struct CardImages: Codable{

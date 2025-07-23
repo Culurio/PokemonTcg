@@ -29,9 +29,9 @@ struct DetailsDialogUIView: View {
                     )
 
                     VStack(alignment: .leading, spacing: 6) {
-                        LabeledTextRow(label: "Name", value: pokemon?.name ?? "unknown")
-                        LabeledTextRow(label: "Type", value: pokemon?.types.first?.rawValue ?? "unknown")
-                        LabeledTextRow(label: "Rarity", value: pokemon?.rarity?.rawValue ?? "unknown")
+                        LabeledTextRow(label: Localized.Label.name, value: pokemon?.name ?? "unknown")
+                        LabeledTextRow(label: Localized.Label.type, value: pokemon?.types.first?.localized ?? "unknown")
+                        LabeledTextRow(label: Localized.Label.rarity, value: pokemon?.rarity?.localized ?? "unknown")
                     }
                     .font(.subheadline)
                     .padding(.horizontal)
