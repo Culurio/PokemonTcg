@@ -4,7 +4,6 @@
 //
 //  Created by Cláudio Costa on 07/07/2025.
 //
-
 import SwiftUI
 
 @MainActor
@@ -39,13 +38,13 @@ class PokemonViewModel: ObservableObject {
             } catch let error as PokemonDataError {
                 switch error {
                     case .network:
-                        self.state = .failure("No internet connection.")
+                        self.state = .failure(Localized.ErrorMessage.network)
                     case .decoding:
-                        self.state = .failure("Could not parse Pokémon data.")
+                        self.state = .failure(Localized.ErrorMessage.decoding)
                     case .emptyResponse:
-                        self.state = .failure("Pokemon not found.")
+                        self.state = .failure(Localized.ErrorMessage.emptyResponse)
                     case .unknown:
-                        self.state = .failure("Something went wrong.")
+                        self.state = .failure(Localized.ErrorMessage.unknown)
                 }
             }
         }

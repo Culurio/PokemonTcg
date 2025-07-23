@@ -25,7 +25,7 @@ struct MenuFilterView: View {
                 }
 
                 ForEach(ElementType.allCases, id: \.self) { type in
-                    filterButton(label: type.rawValue, isSelected: selectedType == type) {
+                    filterButton(label: type.localized, isSelected: selectedType == type) {
                         selectedType = type
                     }
                 }
@@ -37,7 +37,7 @@ struct MenuFilterView: View {
                 }
 
                 ForEach(Rarity.allCases, id: \.self) { rarity in
-                    filterButton(label: rarity.rawValue, isSelected: selectedRarity == rarity) {
+                    filterButton(label: rarity.localized, isSelected: selectedRarity == rarity) {
                         selectedRarity = rarity
                     }
                 }
@@ -72,9 +72,9 @@ struct MenuFilterView: View {
     private var labelText: String {
         switch category {
             case .type:
-                return selectedType?.rawValue ?? "Type"
+                return selectedType?.localized ?? Localized.Label.type
             case .rarity:
-                return selectedRarity?.rawValue ?? "Rarity"
+                return selectedRarity?.localized ?? Localized.Label.rarity
         }
     }
 }
