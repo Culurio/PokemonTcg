@@ -10,8 +10,10 @@ import SwiftUI
 struct ListUIView: View {
     @State private var rotationAngle: Double = 0
     @State private var query = ""
-    @State var filterType: ElementType? = nil
-    @State var filterRarity: Rarity? = nil
+    @State private var filterType: ElementType? = nil
+    @State private var filterRarity: Rarity? = nil
+    @State private var showNoConnectionAlert = false
+    @ObservedObject var networkManager: NetworkMonitor
     @State private var selectedPokemonID: String? = nil
     @StateObject private var viewModel: PokemonViewModel
 
@@ -19,6 +21,7 @@ struct ListUIView: View {
 
     init(layout: ListLayoutStyle) {
         _viewModel = StateObject(wrappedValue: PokemonViewModel())
+        _networkManager = ObservedObject(wrappedValue: NetworkMonitor())
         self.layout = layout
     }
 
@@ -27,19 +30,7 @@ struct ListUIView: View {
             let id = selectedPokemonID,
             case let .success(cards) = viewModel.state
         else { return nil }
-
-        return cards.first(where: { $0.id == id })
-    }
-
-    private func reloadWithFilters() {
-        let filter = PokemonFilter(
-            showOnlyFavourites: layout == .favorites,
-            rarity: filterRarity,
-            type: filterType,
-            searchQuery: query
-        )
-
-        viewModel.loadPokemons(filter: filter)
+        return cards.first { $0.id == id }
     }
 
     var body: some View {
@@ -50,30 +41,17 @@ struct ListUIView: View {
                     content
                         .padding()
                 }
-                .onAppear {
-                    reloadWithFilters()
-                }
-                .onChange(of: query){
-                    reloadWithFilters()
-                }
-                .onChange(of: filterType) {
-                    reloadWithFilters()
-                }
-
-                .onChange(of: filterRarity) {
-                    reloadWithFilters()
-                }
-                .refreshable {
-                    reloadWithFilters()
-                }
+                .modifier(NetworkAlertModifier(
+                    showNoConnectionAlert: $showNoConnectionAlert,
+                    networkManager: networkManager
+                ))
+                .onAppear(perform: reloadWithFilters)
+                .onChange(of: query) { reloadWithFilters() }
+                .onChange(of: filterType) { reloadWithFilters() }
+                .onChange(of: filterRarity) { reloadWithFilters() }
+                .refreshable { reloadWithFilters() }
             }
 
-            modalOverlay
-        }
-    }
-
-    private var modalOverlay: some View {
-        Group {
             if let pokemon = selectedPokemon {
                 PokemonModalOverlayView(
                     pokemon: pokemon,
@@ -109,7 +87,7 @@ struct ListUIView: View {
                 .frame(width: 60, height: 60)
                 .rotationEffect(Angle(degrees: rotationAngle))
                 .onAppear {
-                    withAnimation(Animation.linear(duration: 1).repeatForever(autoreverses: false)) {
+                    withAnimation(.linear(duration: 1).repeatForever(autoreverses: false)) {
                         rotationAngle = 360
                     }
                 }
@@ -127,7 +105,7 @@ struct ListUIView: View {
                 .aspectRatio(contentMode: .fit)
             Text(message)
                 .foregroundColor(.red)
-            Button("Retry"){
+            Button("Retry") {
                 reloadWithFilters()
             }
         }
@@ -160,6 +138,16 @@ struct ListUIView: View {
             )
         }
     }
+
+    private func reloadWithFilters() {
+        let filter = PokemonFilter(
+            showOnlyFavourites: layout == .favorites,
+            rarity: filterRarity,
+            type: filterType,
+            searchQuery: query
+        )
+        viewModel.loadPokemons(filter: filter)
+    }
 }
 
 enum ListLayoutStyle {
@@ -168,10 +156,8 @@ enum ListLayoutStyle {
 
     var columns: [GridItem] {
         switch self {
-            case .home:
-                [GridItem(.flexible()), GridItem(.flexible())]
-            case .favorites:
-                [GridItem(.flexible())]
+            case .home: [.init(.flexible()), .init(.flexible())]
+            case .favorites: [.init(.flexible())]
         }
     }
 
@@ -183,6 +169,29 @@ enum ListLayoutStyle {
     }
 }
 
+struct NetworkAlertModifier: ViewModifier {
+    @Binding var showNoConnectionAlert: Bool
+    let networkManager: NetworkMonitor
+
+    func body(content: Content) -> some View {
+        content
+            .onReceive(networkManager.$connectionType) { connection in
+                if connection == .unavailable {
+                    showNoConnectionAlert = true
+                }
+            }
+            .alert(NSLocalizedString("No internet connection.", comment: "Network error"), isPresented: $showNoConnectionAlert) {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                Button("Dismiss", role: .cancel) {}
+            } message: {
+                Text("Please check your network settings.")
+            }
+    }
+}
 
 #Preview {
     ListUIView(layout: .home)

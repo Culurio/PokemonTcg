@@ -16,9 +16,11 @@ final class PokemonContainer {
     let repository: PokemonRepositoryProtocol
     let fetchPokemonCardsUseCase: FetchPokemonCardsUseCase
     let networkManager: PokemonNetworkManager
+    let networkMonitor: NetworkMonitor
 
     private init() {
         self.networkManager = PokemonNetworkManager()
+        self.networkMonitor = NetworkMonitor()
         self.localDataSource = LocalPokemonDataSource()
         self.remoteDataSource = RemotePokemonDataSource(networkManager: networkManager)
         self.repository = PokemonRepository(local: localDataSource, remote: remoteDataSource)
