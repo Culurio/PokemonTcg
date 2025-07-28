@@ -21,7 +21,7 @@ actor RemotePokemonDataSource: RemotePokemonDataSourceProtocol {
     func fetchFromAPI(filter: PokemonFilter) async throws -> [PokemonCard] {
         var attempt = 0
         let retries = 3
-        var delay: UInt64 = 300_000_000
+        let delay: UInt64 = 300_000_000
 
         while attempt < retries {
             do {
@@ -30,7 +30,6 @@ actor RemotePokemonDataSource: RemotePokemonDataSourceProtocol {
                 attempt += 1
                 if attempt < retries {
                     try? await Task.sleep(nanoseconds: delay)
-                    delay *= 2
                 } else {
                     throw error
                 }
